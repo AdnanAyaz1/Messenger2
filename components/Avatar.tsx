@@ -1,10 +1,9 @@
 "use client";
-
-import { User } from "@/types/types";
+import { ExtendedUser } from "@/types/types";
 import Image from "next/image";
 
 interface AvatarProps {
-  user?: User;
+  user?: ExtendedUser;
 }
 
 const Avatar: React.FC<AvatarProps> = ({ user }) => {
@@ -12,25 +11,24 @@ const Avatar: React.FC<AvatarProps> = ({ user }) => {
   // const isActive = members.indexOf(user?.email!) !== -1;
 
   return (
-    <div className="relative">
-      <div
+    <div className="relative  w-fit rounded-full ">
+      <Image
+        alt="Avatar"
+        src={user?.image || "/images/placeholder.jpg"}
+        width={36}
+        height={36}
         className="
-          relative
           rounded-full
-          overflow-hidden
+          object-cover
           h-9
           w-9
           md:h-11
           md:w-11
-        "
-      >
-        <Image
-          alt="Avatar"
-          src={user?.image || "/images/placeholder.jpg"}
-          fill
-        />
-      </div>
-
+          cursor-pointer
+          hover:opacity-80
+          transition-opacity
+          "
+      />
       <span
         className="
             absolute

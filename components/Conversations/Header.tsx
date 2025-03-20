@@ -1,6 +1,6 @@
 "use client";
 import useOtherUser from "@/hooks/useOtherUser";
-import { ExtendedConversation } from "@/types/types";
+import { ExtendedConversation, ExtendedUser } from "@/types/types";
 import React, { useMemo, useState } from "react";
 import Avatar from "../Avatar";
 import Link from "next/link";
@@ -48,7 +48,7 @@ const Header = ({ conversation }: { conversation: ExtendedConversation }) => {
           <HiChevronLeft size={32} />
         </Link>
 
-        <Avatar user={otherUser} />
+        <Avatar user={otherUser as ExtendedUser} />
 
         <div className="flex flex-col">
           <div>{conversation.name || otherUser?.username}</div>

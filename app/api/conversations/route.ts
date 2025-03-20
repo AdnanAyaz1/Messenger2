@@ -1,6 +1,7 @@
 import { getUser } from "@/actions/getUser";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prismadb";
+import { apiResponse } from "@/lib/utils";
 
 export async function POST(request: Request) {
   try {
@@ -55,7 +56,7 @@ export async function POST(request: Request) {
     });
 
     if (exisitingConversation) {
-      return NextResponse.json(exisitingConversation);
+      return apiResponse("", true, 200, exisitingConversation);
     }
 
     const newConversation = await prisma.conversation.create({
@@ -77,7 +78,7 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json(newConversation);
+    return apiResponse("Conversation Created", true, 201, newConversation);
   } catch (error: any) {
     console.error("Error creating conversation:", error);
     return new NextResponse("Internal Error", { status: 500 });

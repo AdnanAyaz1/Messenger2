@@ -3,38 +3,57 @@
 import axios from "axios";
 
 import { useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
+
 import Avatar from "../Avatar";
-import { ExtendedUser } from "@/types/types";
+import { ExtendedConversation, ExtendedUser } from "@/types/types";
+import useOtherUser from "@/hooks/useOtherUser";
+import { useSession } from "next-auth/react";
+import { format } from "date-fns";
 
 interface UserBoxProps {
-  data: ExtendedUser;
+  data: ExtendedUser | ExtendedConversation;
+  route: string;
 }
 
-const UserBox: React.FC<UserBoxProps> = ({ data }) => {
+const UserBox = ({ data, route }: UserBoxProps) => {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const session = useSession();
+  const otherUser = useOtherUser(data as ExtendedConversation);
+  const handleClick = async () => {
+    try {
+      const res = await axios.post("/api/conversations", {
+        userId: otherUser ? otherUser.id : data.id,
+      });
+      if (res.data?.success) {
+        router.push(`/conversations/${res.data.data.id}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  const handleClick = useCallback(async () => {
-    setIsLoading(true);
+  const userdata =
+    route === "/"
+      ? (data as ExtendedUser)
+      : useOtherUser(data as ExtendedConversation);
 
-    await axios
-      .post("/api/conversations", {
-        userId: data.id,
-      })
-      .then((data) => {
-        router.push(`/conversations/${data.data.id}`);
-      })
-      .finally(() => setIsLoading(false));
-  }, [data, router]);
-
+  const messages = (data as ExtendedConversation)?.messages || [];
+  const lastMessage = messages
+    ? messages[messages.length - 1]
+    : { image: "", body: "", createdAt: "" };
+  const userEmail = session.data?.user?.email;
+  const lastMessageText = lastMessage?.image
+    ? "Sent an image"
+    : lastMessage?.body
+      ? lastMessage.body
+      : "Start a Conversation";
+  const hasSeen = true;
   return (
     <>
       <div
         onClick={handleClick}
-        className="
+        className={`
           w-full
-          relative
           flex
           items-center
           space-x-3
@@ -44,30 +63,43 @@ const UserBox: React.FC<UserBoxProps> = ({ data }) => {
           rounded-lg
           transition
           cursor-pointer
-        "
+        `}
       >
-        <Avatar user={data} />
-        <div className="min-w-0 flex-1">
-          <div className="focus:outline-none">
-            <div
+        <Avatar user={userdata as ExtendedUser} />
+        <div className="flex flex-col flex-1">
+          <div className="flex items-center justify-between flex-1">
+            <p
               className="
-                flex
-                justify-between
-                items-center
-                mb-1
-              "
-            >
-              <p
-                className="
                   text-sm
                   font-medium
                   text-gray-900
                 "
+            >
+              {userdata?.username}
+            </p>
+            {lastMessage?.createdAt && (
+              <p
+                className="
+                  text-xs
+                  text-gray-400
+                  font-light
+                "
               >
-                {data.username}
+                {format(new Date(lastMessage.createdAt), "p")}
               </p>
-            </div>
+            )}
           </div>
+          {data?.messages && (
+            <p
+              className={`
+              truncate
+              text-sm
+               ${hasSeen} ? "text-gray-500" : "text-black font-medium"
+            `}
+            >
+              {lastMessageText}
+            </p>
+          )}
         </div>
       </div>
     </>
