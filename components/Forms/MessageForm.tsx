@@ -10,13 +10,7 @@ import {
 } from "next-cloudinary";
 import axios from "axios";
 
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormControl,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormField, FormItem, FormControl } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import useConversation from "@/hooks/useConversation";
@@ -51,7 +45,6 @@ const MessageForm = () => {
 
   const handleUpload = async (results: CloudinaryUploadWidgetResults) => {
     try {
-      //  console.log("image upload results", results);
       if (
         results.event === "success" &&
         typeof results.info === "object" &&
@@ -61,6 +54,7 @@ const MessageForm = () => {
           image: results.info.secure_url,
           conversationId,
         });
+      form.clearErrors("message");
     } catch (error) {
       console.error("Error uploading image:", error);
     }
@@ -97,7 +91,7 @@ const MessageForm = () => {
                     className="w-full rounded-full focus-visible:ring-0 focus-visible:border-2"
                   />
                 </FormControl>
-                <FormMessage />
+                {/* <FormMessage /> */}
               </FormItem>
             )}
           />
