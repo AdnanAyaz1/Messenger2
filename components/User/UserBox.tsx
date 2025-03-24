@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { useSession } from "next-auth/react";
 import { format } from "date-fns";
 
 import Avatar from "../Avatar";
@@ -14,10 +13,9 @@ import LoadingModal from "../LoadingModal";
 
 interface UserBoxProps {
   data: ExtendedUser | ExtendedConversation;
-  route: string;
 }
 
-const UserBox = ({ data, route }: UserBoxProps) => {
+const UserBox = ({ data }: UserBoxProps) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const isConversation = "users" in data; // ✅ Check if data is a conversation

@@ -45,7 +45,7 @@ const SidebarPanel = async ({
             </div>
           </div>
           {data.map((item) => (
-            <UserBox key={item.id} data={item} route={route} />
+            <UserBox key={item.id} data={item}  />
           ))}
         </div>
       </div>
