@@ -23,7 +23,7 @@ const CreateGroupChat = ({ allUsers }: { allUsers: ExtendedUser[] }) => {
           heading="Group Chat"
           description="Create a group chat with two or more people"
         >
-          <GroupChatForm users={allUsers} />
+          <GroupChatForm users={allUsers}  />
         </CreateGroupChatModal>
       )}
     </>

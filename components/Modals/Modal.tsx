@@ -1,8 +1,6 @@
 "use client";
-import { ExtendedUser } from "@/types/types";
 import { Plus } from "lucide-react";
 import React, { useState, useEffect, ReactNode } from "react";
-import EditUserForm from "../Forms/EditUserForm";
 
 interface EditUser {
   children: ReactNode;
