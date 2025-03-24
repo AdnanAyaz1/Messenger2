@@ -48,3 +48,18 @@ export const signUpSchemaApi = z.object({
       "Password must contain at least one special character (@$!%*?&)"
     ),
 });
+
+export const editUserSchema = z.object({
+  username: z
+    .string()
+    .min(3, "Username must be at least 3 characters long")
+    .max(20, "Username must be at most 20 characters long"),
+  image: z.string().optional(),
+});
+
+export const groupChatSchema = z.object({
+  name: z.string().min(3, "Name must be at least 3 characters long"),
+  members: z
+    .array(z.string())
+    .min(2, "Group chat must have at least 2 members"),
+});

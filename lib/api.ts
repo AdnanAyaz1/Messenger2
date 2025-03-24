@@ -1,16 +1,17 @@
-import { User } from "@/types/types";
+import { ExtendedUser } from "@/types/types";
 
 import { fetchHandler } from "./handlers/fetchHandler";
+import { User } from "next-auth";
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000/api";
 export const api = {
   auth: {
-    registor: (userData: Partial<User>) =>
+    registor: (userData: Partial<ExtendedUser>) =>
       fetchHandler(`${API_BASE_URL}/auth/sign-up`, {
         method: "POST",
         body: JSON.stringify(userData),
       }),
-    log_in: (userData: Partial<User>) =>
+    log_in: (userData: Partial<ExtendedUser>) =>
       fetchHandler(`${API_BASE_URL}/auth/sign-in`, {
         method: "POST",
         body: JSON.stringify(userData),

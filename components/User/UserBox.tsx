@@ -1,14 +1,14 @@
 "use client";
 
-import axios from "axios";
-
 import { useRouter } from "next/navigation";
-
-import Avatar from "../Avatar";
-import { ExtendedConversation, ExtendedUser } from "@/types/types";
-import useOtherUser from "@/hooks/useOtherUser";
+import axios from "axios";
 import { useSession } from "next-auth/react";
 import { format } from "date-fns";
+
+import Avatar from "../Avatar";
+import AvatarGroup from "../AvatarGroup";
+import { ExtendedConversation, ExtendedUser } from "@/types/types";
+import useOtherUser from "@/hooks/useOtherUser";
 
 interface UserBoxProps {
   data: ExtendedUser | ExtendedConversation;
@@ -17,13 +17,19 @@ interface UserBoxProps {
 
 const UserBox = ({ data, route }: UserBoxProps) => {
   const router = useRouter();
-  const session = useSession();
-  const otherUser = useOtherUser(data as ExtendedConversation);
+  const isConversation = "users" in data; // ✅ Check if data is a conversation
+  const otherUser = isConversation ? useOtherUser(data) : null;
+
   const handleClick = async () => {
     try {
       const res = await axios.post("/api/conversations", {
-        userId: otherUser ? otherUser.id : data.id,
+        userId: isConversation
+          ? data.isGroup
+            ? data.id
+            : otherUser!.id
+          : data.id,
       });
+      console.log(res);
       if (res.data?.success) {
         router.push(`/conversations/${res.data.data.id}`);
       }
@@ -32,77 +38,47 @@ const UserBox = ({ data, route }: UserBoxProps) => {
     }
   };
 
-  const userdata =
-    route === "/"
-      ? (data as ExtendedUser)
-      : useOtherUser(data as ExtendedConversation);
+  const userdata = isConversation ? otherUser : (data as ExtendedUser);
 
-  const messages = (data as ExtendedConversation)?.messages || [];
-  const lastMessage = messages
-    ? messages[messages.length - 1]
-    : { image: "", body: "", createdAt: "" };
-  const userEmail = session.data?.user?.email;
-  const lastMessageText = lastMessage?.image
-    ? "Sent an image"
-    : lastMessage?.body
-      ? lastMessage.body
-      : "Start a Conversation";
-  const hasSeen = true;
+  const messages = isConversation
+    ? (data as ExtendedConversation).messages
+    : [];
+  const lastMessage =
+    messages && messages.length > 0 ? messages[messages.length - 1] : null;
+
+  const lastMessageText = lastMessage
+    ? lastMessage.image
+      ? "Sent an image"
+      : lastMessage.body || "Start a Conversation"
+    : "Start a Conversation";
+
   return (
-    <>
-      <div
-        onClick={handleClick}
-        className={`
-          w-full
-          flex
-          items-center
-          space-x-3
-          bg-white
-          p-3
-          hover:bg-neutral-100
-          rounded-lg
-          transition
-          cursor-pointer
-        `}
-      >
+    <div
+      onClick={handleClick}
+      className="w-full flex items-center space-x-3 bg-white p-3 hover:bg-neutral-100 rounded-lg transition cursor-pointer"
+    >
+      {isConversation && data.isGroup ? (
+        <AvatarGroup users={data.users} />
+      ) : (
         <Avatar user={userdata as ExtendedUser} />
-        <div className="flex flex-col flex-1">
-          <div className="flex items-center justify-between flex-1">
-            <p
-              className="
-                  text-sm
-                  font-medium
-                  text-gray-900
-                "
-            >
-              {userdata?.username}
-            </p>
-            {lastMessage?.createdAt && (
-              <p
-                className="
-                  text-xs
-                  text-gray-400
-                  font-light
-                "
-              >
-                {format(new Date(lastMessage.createdAt), "p")}
-              </p>
-            )}
-          </div>
-          {data?.messages && (
-            <p
-              className={`
-              truncate
-              text-sm
-               ${hasSeen} ? "text-gray-500" : "text-black font-medium"
-            `}
-            >
-              {lastMessageText}
+      )}
+
+      <div className="flex flex-col flex-1">
+        <div className="flex items-center justify-between flex-1">
+          <p className="text-sm font-medium text-gray-900">
+            {isConversation && data.isGroup ? data.name : userdata?.username}
+          </p>
+          {lastMessage?.createdAt && (
+            <p className="text-xs text-gray-400 font-light">
+              {format(new Date(lastMessage.createdAt), "p")}
             </p>
           )}
         </div>
+        {isConversation && (
+          <p className="truncate text-sm text-gray-500">{lastMessageText}</p>
+        )}
       </div>
-    </>
+    </div>
   );
 };
 

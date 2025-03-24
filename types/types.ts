@@ -1,4 +1,6 @@
 import { User, Message, Conversation } from "@prisma/client";
+import { Label } from "@radix-ui/react-label";
+import { string } from "zod";
 
 // User Type with Optional Relations
 export type ExtendedUser = User & {
@@ -19,3 +21,8 @@ export type ExtendedMessage = Message & {
   conversation?: ExtendedConversation; // Optional
   seen?: ExtendedUser[]; // Optional
 };
+
+export interface MultiSelectInterface {
+  label: string;
+  value: string;
+}

@@ -2,9 +2,8 @@ import prisma from "@/lib/prismadb";
 import { apiResponse, handleApiError } from "@/lib/utils";
 
 export async function POST(req: Request) {
-  const username = await req.json();
+  const { username } = await req.json();
   try {
-    // Check if the username is already taken
     const existingUser = await prisma.user.findFirst({
       where: {
         username,

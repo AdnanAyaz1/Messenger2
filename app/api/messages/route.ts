@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prismadb";
 import { getUser } from "@/actions/getUser";
+import { apiResponse, handleApiError } from "@/lib/utils";
 
 export async function POST(request: Request) {
   try {
@@ -9,7 +10,8 @@ export async function POST(request: Request) {
     const { message, image, conversationId } = body;
 
     if (!currentUser?.id || !currentUser?.email) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      // return new NextResponse("Unauthorized", { status: 401 });
+      return apiResponse("Unauthorized", false, 401);
     }
 
     const newMessage = await prisma.message.create({
@@ -60,11 +62,8 @@ export async function POST(request: Request) {
       },
     });
 
-
-
     return NextResponse.json(newMessage);
   } catch (error: any) {
-    console.log(error, "ERROR_MESSAGES");
-    return new NextResponse("InternalError", { status: 500 });
+    return handleApiError(error);
   }
 }

@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
-import { UseFormReturn} from "react-hook-form";
+import { UseFormReturn } from "react-hook-form";
+import axios from "axios";
 
-import { api } from "@/lib/api";
+interface FormFields {
+  username: string;
+}
 
 interface UsernameCheckProps {
-  form: UseFormReturn;
+  form: UseFormReturn<FormFields>; // ✅ Define the expected fields
 }
 
 const UsernameCheck = ({ form }: UsernameCheckProps) => {
@@ -13,7 +16,7 @@ const UsernameCheck = ({ form }: UsernameCheckProps) => {
   );
   const [checkingUsername, setCheckingUsername] = useState<boolean>(false);
 
-  const username = form.watch("username");
+  const username = form.watch("username"); // ✅ Now correctly typed
 
   useEffect(() => {
     if (!username) {
@@ -25,10 +28,13 @@ const UsernameCheck = ({ form }: UsernameCheckProps) => {
     const delayDebounceFn = setTimeout(async () => {
       setCheckingUsername(true);
       try {
-        const res = await api.auth.check_username(username as string);
-        setUsernameAvailable(res.success);
+        const res = await axios.post("/api/auth/sign-up/username", {
+          username,
+        });
 
-        if (!res.success) {
+        setUsernameAvailable(res.data.success);
+
+        if (!res.data.success) {
           form.setError("username", {
             type: "manual",
             message: "This username is already taken",
@@ -53,7 +59,7 @@ const UsernameCheck = ({ form }: UsernameCheckProps) => {
         <p className="text-blue-400 text-sm">Checking...</p>
       ) : usernameAvailable ? (
         <p className="text-green-500 text-sm">
-          Username {username as string} is available
+          Username {username} is available
         </p>
       ) : null}
     </div>

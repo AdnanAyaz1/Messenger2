@@ -1,7 +1,7 @@
 import { getUser } from "@/actions/getUser";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prismadb";
-import { apiResponse } from "@/lib/utils";
+import { apiResponse, handleApiError } from "@/lib/utils";
 
 export async function POST(request: Request) {
   try {
@@ -9,35 +9,47 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { userId, isGroup, members, name } = body;
 
-    // if (!currentUser?.id || !currentUser?.email) {
-    //   return new NextResponse("Unauthorized", { status: 401 });
-    // }
+    if (!currentUser?.id || !currentUser?.email) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
 
-    // if (isGroup && (!members || members.length < 2 || !name)) {
-    //   return new NextResponse("Invalid data", { status: 400 });
-    // }
+    if (isGroup && (!members || members.length < 2 || !name)) {
+      return new NextResponse("Invalid data", { status: 400 });
+    }
 
-    // if (isGroup) {
-    //   const newConversation = await prisma.conversation.create({
-    //     data: {
-    //       name,
-    //       isGroup,
-    //       users: {
-    //         connect: [
-    //           ...members.map((member: { value: string }) => ({
-    //             id: member.value,
-    //           })),
-    //           {
-    //             id: currentUser.id,
-    //           },
-    //         ],
-    //       },
-    //     },
-    //     include: {
-    //       users: true,
-    //     },
-    //   });
-    // }
+    if (isGroup) {
+      const newConversation = await prisma.conversation.create({
+        data: {
+          name,
+          isGroup,
+          users: {
+            connect: [
+              ...members.map((member: string) => ({
+                id: member,
+              })),
+              {
+                id: currentUser.id,
+              },
+            ],
+          },
+        },
+        include: {
+          users: true,
+        },
+      });
+      return apiResponse("Conversation Created", true, 201, newConversation);
+    }
+
+    const existingGroupConversation = await prisma.conversation.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (existingGroupConversation) {
+      return apiResponse("", true, 200, existingGroupConversation);
+    }
+
     const exisitingConversation = await prisma.conversation.findFirst({
       where: {
         OR: [
@@ -80,7 +92,6 @@ export async function POST(request: Request) {
 
     return apiResponse("Conversation Created", true, 201, newConversation);
   } catch (error: any) {
-    console.error("Error creating conversation:", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return handleApiError(error);
   }
 }

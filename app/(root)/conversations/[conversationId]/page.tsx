@@ -12,8 +12,11 @@ const page = async ({ params }: { params: { conversationId: string } }) => {
   const messages = await getMessages(params.conversationId);
   return (
     <div className="flex flex-1">
-      <SidebarPanel route="/conversations" conversationId={params.conversationId} />
-      <div className="flex flex-col flex-1  max-h-screen">
+      <SidebarPanel
+        route="/conversations"
+        conversationId={params.conversationId}
+      />
+      <div className="flex flex-col flex-1 min-h-screen  max-h-screen">
         <Header conversation={conversation as ExtendedConversation} />
         <Body messages={messages} />
         <MessageForm />

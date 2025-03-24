@@ -11,7 +11,7 @@ const Avatar: React.FC<AvatarProps> = ({ user }) => {
   // const isActive = members.indexOf(user?.email!) !== -1;
 
   return (
-    <div className="relative  w-fit rounded-full ">
+    <div className="relative w-fit rounded-full">
       <Image
         alt="Avatar"
         src={user?.image || "/images/placeholder.jpg"}

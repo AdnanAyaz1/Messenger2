@@ -3,9 +3,13 @@ import DesktopItem from "./DesktopItem";
 import Avatar from "../Avatar";
 import { ExtendedUser } from "@/types/types";
 import useRoutes from "@/hooks/useRoutes";
+import { useState } from "react";
+import EditUserModal from "../Modals/Modal";
+import EditUserForm from "../Forms/EditUserForm";
 
 const DesktopSidebar = ({ user }: { user: ExtendedUser }) => {
   const routes = useRoutes();
+  const [isOpen, setIsOpen] = useState(false); // state for showing the update user modal
   return (
     <div
       className="
@@ -20,6 +24,7 @@ const DesktopSidebar = ({ user }: { user: ExtendedUser }) => {
           overflow-y-auto
           bg-white
           border-r-[1px]
+          border-gray-300
           pb-4
           lg:flex
           lg:flex-col
@@ -55,7 +60,19 @@ const DesktopSidebar = ({ user }: { user: ExtendedUser }) => {
             />
           ))}
         </ul>
-        <Avatar user={user as ExtendedUser} />
+
+        <button onClick={() => setIsOpen(true)}>
+          <Avatar user={user} />
+        </button>
+        {isOpen && (
+          <EditUserModal
+            onClose={() => setIsOpen(false)}
+            heading="Edit Profile"
+            description="Edit your profile and then click on the save button"
+          >
+            <EditUserForm user={user} onClose={() => setIsOpen(false)} />
+          </EditUserModal>
+        )}
       </nav>
     </div>
   );

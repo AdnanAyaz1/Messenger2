@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import clsx from "clsx";
-import { ExtendedConversation } from "@/types/types";
+import { ExtendedConversation, ExtendedUser } from "@/types/types";
 import useOtherUser from "@/hooks/useOtherUser";
 import Avatar from "../Avatar";
 
@@ -81,7 +81,7 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
         selected ? "bg-neutral-100" : "bg-white"
       )}
     >
-      <Avatar user={otherUser} />
+      <Avatar user={otherUser as ExtendedUser} />
 
       <div className="min-w-0 flex-1">
         <div className="focus:outline-none">

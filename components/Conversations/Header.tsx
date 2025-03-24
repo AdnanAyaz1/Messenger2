@@ -1,14 +1,14 @@
 "use client";
 import useOtherUser from "@/hooks/useOtherUser";
 import { ExtendedConversation, ExtendedUser } from "@/types/types";
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import Avatar from "../Avatar";
 import Link from "next/link";
 import { HiChevronLeft, HiEllipsisHorizontal } from "react-icons/hi2";
+import AvatarGroup from "../AvatarGroup";
 
 const Header = ({ conversation }: { conversation: ExtendedConversation }) => {
   const otherUser = useOtherUser(conversation);
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const isActive = true;
   const statusText = useMemo(() => {
     if (conversation.isGroup) {
@@ -24,6 +24,7 @@ const Header = ({ conversation }: { conversation: ExtendedConversation }) => {
           w-full
           flex
           border-b-[1px]
+          border-gray-300
           sm:px-4
           py-3
           px-4
@@ -48,7 +49,11 @@ const Header = ({ conversation }: { conversation: ExtendedConversation }) => {
           <HiChevronLeft size={32} />
         </Link>
 
-        <Avatar user={otherUser as ExtendedUser} />
+        {conversation.isGroup ? (
+          <AvatarGroup users={conversation.users} />
+        ) : (
+          <Avatar user={otherUser as ExtendedUser} />
+        )}
 
         <div className="flex flex-col">
           <div>{conversation.name || otherUser?.username}</div>
@@ -65,7 +70,6 @@ const Header = ({ conversation }: { conversation: ExtendedConversation }) => {
       </div>
       <HiEllipsisHorizontal
         size={32}
-        onClick={() => setDrawerOpen(true)}
         className="
             text-sky-500
             cursor-pointer

@@ -67,7 +67,7 @@ const MessageForm = () => {
   };
 
   return (
-    <div className="py-4 px-4 bg-white border-t flex items-center gap-2 lg:gap-4 w-full">
+    <div className="py-4 px-4 bg-white border-t-[1px] border-gray-300 flex items-center gap-2 lg:gap-4 w-full">
       <CldUploadWidget uploadPreset="DevFlow" onSuccessAction={handleUpload}>
         {({ open }) => {
           return (
