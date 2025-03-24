@@ -7,16 +7,20 @@ import SidebarPanel from "@/components/Sidebar/SidebarPanel";
 import { ExtendedConversation } from "@/types/types";
 import React from "react";
 
-const page = async ({ params }: { params: { conversationId: string } }) => {
-  const conversation = await getConversationById(params.conversationId);
-  const messages = await getMessages(params.conversationId);
+const page = async ({
+  params,
+}: {
+  params: Promise<{ conversationId: string }>;
+}) => {
+  const { conversationId } = await params;
+
+  const conversation = await getConversationById(conversationId);
+  const messages = await getMessages(conversationId);
+
   return (
     <div className="flex flex-1">
-      <SidebarPanel
-        route="/conversations"
-        conversationId={params.conversationId}
-      />
-      <div className="flex flex-col flex-1 min-h-screen  max-h-screen">
+      <SidebarPanel route="/conversations" conversationId={conversationId} />
+      <div className="flex flex-col flex-1 min-h-screen max-h-screen">
         <Header conversation={conversation as ExtendedConversation} />
         <Body messages={messages} />
         <MessageForm />
