@@ -34,7 +34,7 @@ const AuthButtons = () => {
           width={24}
           height={24}
         />
-        <p className="paragraph-medium">Login with Google</p>
+        <p className="paragraph-medium max-md:hidden">Login with Google</p>
       </Button>
       <Button
         variant={"ghost"}
@@ -52,7 +52,7 @@ const AuthButtons = () => {
           height={24}
           className="dark:invert"
         />
-        <p className="paragraph-medium">Login with Github</p>
+        <p className="paragraph-medium max-md:hidden">Login with Github</p>
       </Button>
     </div>
   );
